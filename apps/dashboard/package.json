@@ -1,0 +1,33 @@
+{
+  "name": "memory-firewall-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Forensic lab UI for Memory Firewall: ingest and scan, source trust map, memory ledger, quarantine review, claim conflicts, retrieval trace, time machine and attack lab.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "dev": "node scripts/build.mjs --watch",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "devDependencies": {
+    "typescript": "5.9.2"
+  },
+  "comment": [
+    "This dashboard has ZERO runtime dependencies and no bundler. Sources are TypeScript compiled",
+    "to native ES modules, which the browser loads directly. The consequences are deliberate:",
+    "the production image is a static file server, there is no transitive dependency surface in a",
+    "security tool's own UI, and the build cannot break because of a toolchain upgrade.",
+    "docs/DECISIONS.md records why this was chosen over React/Vite/Tailwind and what it costs.",
+    "",
+    "NO package-lock.json is committed: the environment this was built in could not reach the npm",
+    "registry, so one could not be generated, and hand-writing integrity hashes would be worse than",
+    "shipping none. The single devDependency is pinned to an EXACT version, so `npm install` is",
+    "reproducible in practice. Run `npm install` once with network access and commit the resulting",
+    "lockfile to make it reproducible by construction."
+  ]
+}

@@ -1,0 +1,14 @@
+flowchart LR
+  S["Documents, tool results, memories"] --> N["Normalise + hash<br/>NFKC · invisible chars · homoglyphs · tag decode"]
+  Q0["Query<br/>identity from bearer token only"] --> R
+  N --> P{"1. Pre-write policy<br/>detector + claim graph + source trust tier"}
+  P -->|pass| M[("Active indexed chunks<br/>SQLite FTS5 + integrity manifests")]
+  P -->|suspicious| Q[("Quarantine / review<br/>never indexed")]
+  Q -->|reviewer-approved revision| M
+  M --> R{"2. Pre-retrieval guard<br/>tenant · ACL · state · valid+system time · integrity"}
+  R -->|eligible| U["3. At-use guard<br/>context pack with chunk IDs, citations, tiers, risk tags"]
+  R -->|excluded| X["No model exposure<br/>fails closed"]
+  U --> A["Agent / copilot"]
+  R --> E["Bitemporal evidence ledger<br/>validity · findings · claims · reviews · exposures · audit"]
+  P --> E
+  E --> D["Forensic dashboard<br/>ledger · quarantine · conflicts · trace · time machine · attack lab"]

@@ -1,0 +1,74 @@
+# ---------------------------------------------------------------------------------------------
+# Memory Firewall — never commit personal reference material, credentials or local databases.
+# `make verify` asserts the private/ rule with `git check-ignore`, so this file is load-bearing.
+# ---------------------------------------------------------------------------------------------
+
+# Private research reference material (CLAUDE.md §6: never commit private/)
+private/
+*.interview-notes.pdf
+*Research_Interview_Guide*.pdf
+*Memory_Firewall_Research_Interview_Guide*.pdf
+
+# Secrets and local profiles
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!**/public*.key
+secrets/
+*.token
+
+# Local databases, manifests and runtime state
+data/
+*.db
+*.db-*
+*.sqlite3
+*.sqlite3-*
+*.sqlite3.manifests
+*.sqlite3.manifests-*
+
+# Evaluation working directories and anything an eval generates that is not the committed scorecard
+evals/results/_work/
+evals/results/*.tmp
+uploads/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+dist/
+build/
+
+# Node / frontend
+node_modules/
+apps/dashboard/dist/
+apps/dashboard/build/
+apps/dashboard/.vite/
+*.tsbuildinfo
+npm-debug.log*
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Local dev-stack runtime state (created by scripts/devstack.sh)
+.devstack.pids
+.devstack-*.log

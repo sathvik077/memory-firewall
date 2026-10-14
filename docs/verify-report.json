@@ -1,0 +1,200 @@
+{
+  "generated_at": "2026-10-14T20:08:26Z",
+  "summary": {
+    "PASS": 19,
+    "FAIL": 0,
+    "BLOCKED": 2,
+    "SKIPPED": 0
+  },
+  "results": [
+    {
+      "name": "environment diagnostics",
+      "status": "PASS",
+      "detail": "}",
+      "command": "/usr/bin/python3 -m memory_firewall.cli doctor",
+      "retry": "",
+      "duration_s": 0.27,
+      "evidence": ""
+    },
+    {
+      "name": "unit tests",
+      "status": "PASS",
+      "detail": "markers: parametrize=5",
+      "command": "/usr/bin/python3 scripts/pytest_fallback.py tests/unit",
+      "retry": "",
+      "duration_s": 0.5,
+      "evidence": "markers: parametrize=5"
+    },
+    {
+      "name": "integration tests",
+      "status": "PASS",
+      "detail": "markers: integration=24, parametrize=2",
+      "command": "/usr/bin/python3 scripts/pytest_fallback.py tests/integration",
+      "retry": "",
+      "duration_s": 9.99,
+      "evidence": "markers: integration=24, parametrize=2"
+    },
+    {
+      "name": "security regression suite",
+      "status": "PASS",
+      "detail": "markers: parametrize=7",
+      "command": "/usr/bin/python3 scripts/pytest_fallback.py tests/security",
+      "retry": "",
+      "duration_s": 10.05,
+      "evidence": "markers: parametrize=7"
+    },
+    {
+      "name": "no security test was skipped",
+      "status": "PASS",
+      "detail": "OK: every security test executed and passed.",
+      "command": "/usr/bin/python3 scripts/assert_no_skipped_security.py",
+      "retry": "",
+      "duration_s": 9.6,
+      "evidence": "security suite: executed=119 skipped=0 exit=0\nOK: every security test executed and passed."
+    },
+    {
+      "name": "release seed vectors (TEST_VECTORS.json)",
+      "status": "PASS",
+      "detail": "markers: integration=2, parametrize=1",
+      "command": "/usr/bin/python3 scripts/pytest_fallback.py tests/integration/test_release_vectors.py",
+      "retry": "",
+      "duration_s": 1.32,
+      "evidence": "markers: integration=2, parametrize=1"
+    },
+    {
+      "name": "offline scenarios",
+      "status": "PASS",
+      "detail": "12/12 scenarios passed (64 assertions)",
+      "command": "/usr/bin/python3 -m memory_firewall.cli scenarios",
+      "retry": "",
+      "duration_s": 2.09,
+      "evidence": "12/12 scenarios passed (64 assertions)"
+    },
+    {
+      "name": "mandatory smoke",
+      "status": "PASS",
+      "detail": "}",
+      "command": "/usr/bin/python3 -m memory_firewall.cli smoke",
+      "retry": "",
+      "duration_s": 1.43,
+      "evidence": "  \"verdict\": \"PASS\"\n}"
+    },
+    {
+      "name": "SDK quickstart example",
+      "status": "PASS",
+      "detail": "Everything above ran offline against real SQLite + FTS5. No API key, no network.",
+      "command": "/usr/bin/python3 examples/sdk_quickstart.py",
+      "retry": "",
+      "duration_s": 0.27,
+      "evidence": "Everything above ran offline against real SQLite + FTS5. No API key, no network."
+    },
+    {
+      "name": "support copilot example",
+      "status": "PASS",
+      "detail": "authorised source at all, so the copilot declines instead of inventing one.",
+      "command": "/usr/bin/python3 examples/support_copilot/copilot.py",
+      "retry": "",
+      "duration_s": 0.31,
+      "evidence": "authorised source at all, so the copilot declines instead of inventing one."
+    },
+    {
+      "name": "evaluation scorecard present and >=120 cases",
+      "status": "PASS",
+      "detail": "178 cases; poison exposure 0.0; stale-index 0/10; 5/5 pre-registered goals met",
+      "command": "",
+      "retry": "",
+      "duration_s": 0.0,
+      "evidence": ""
+    },
+    {
+      "name": "all pre-registered goals met",
+      "status": "PASS",
+      "detail": "5/5",
+      "command": "",
+      "retry": "",
+      "duration_s": 0.0,
+      "evidence": ""
+    },
+    {
+      "name": "ruff lint",
+      "status": "PASS",
+      "detail": "All checks passed!",
+      "command": "ruff check .",
+      "retry": "",
+      "duration_s": 0.02,
+      "evidence": ""
+    },
+    {
+      "name": "ruff format",
+      "status": "PASS",
+      "detail": "71 files already formatted",
+      "command": "ruff format --check .",
+      "retry": "",
+      "duration_s": 0.02,
+      "evidence": ""
+    },
+    {
+      "name": "mypy typecheck",
+      "status": "BLOCKED",
+      "detail": "mypy is not installed",
+      "command": "python -m mypy",
+      "retry": "uv sync --extra dev && python -m mypy",
+      "duration_s": 0.0,
+      "evidence": ""
+    },
+    {
+      "name": "dashboard typecheck + build",
+      "status": "PASS",
+      "detail": "built -> /home/claude/memory-firewall/apps/dashboard/dist",
+      "command": "npm run build --prefix apps/dashboard",
+      "retry": "",
+      "duration_s": 2.79,
+      "evidence": "built -> /home/claude/memory-firewall/apps/dashboard/dist"
+    },
+    {
+      "name": "browser end-to-end + live dashboard assertions",
+      "status": "PASS",
+      "detail": "==============================================================================",
+      "command": "/usr/bin/python3 scripts/run_e2e.py",
+      "retry": "",
+      "duration_s": 14.28,
+      "evidence": "==============================================================================\n33/33 browser checks passed in 14.1s\n=============================================================================="
+    },
+    {
+      "name": "required screenshots and architecture image exist",
+      "status": "PASS",
+      "detail": "all present",
+      "command": "",
+      "retry": "make screenshots && make arch",
+      "duration_s": 0.0,
+      "evidence": ""
+    },
+    {
+      "name": "required documents exist",
+      "status": "PASS",
+      "detail": "all present",
+      "command": "",
+      "retry": "",
+      "duration_s": 0.0,
+      "evidence": ""
+    },
+    {
+      "name": "git hygiene: private/ ignored, no .env tracked",
+      "status": "PASS",
+      "detail": "private/ ignored and nothing sensitive tracked",
+      "command": "",
+      "retry": "",
+      "duration_s": 0.0,
+      "evidence": ""
+    },
+    {
+      "name": "docker image builds",
+      "status": "BLOCKED",
+      "detail": "docker is unavailable or its daemon is not running",
+      "command": "",
+      "retry": "docker build -f Dockerfile.api -t memory-firewall-api:dev .",
+      "duration_s": 0.0,
+      "evidence": ""
+    }
+  ]
+}

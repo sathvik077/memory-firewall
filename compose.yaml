@@ -1,0 +1,57 @@
+# Memory Firewall — local development stack.
+#
+# DEV PROFILE ONLY. Every port is published to 127.0.0.1, so nothing is reachable from the network.
+# This is a demonstration stack: it has no TLS, no secret manager, no backups and no observability.
+# `docs/SECURITY.md` lists exactly what a hosted deployment would still need. Running this on
+# localhost is not a production deployment.
+
+name: memory-firewall
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: memory-firewall-api:dev
+    ports:
+      - "127.0.0.1:8002:8002"
+    environment:
+      MF_DB_PATH: /data/memory-firewall.sqlite3
+      MF_CORS_ORIGINS: "http://127.0.0.1:5174,http://localhost:5174"
+      MF_ENABLE_UNGUARDED_BASELINE: "1"   # labelled measurement baseline, admin-only
+      MF_DEV_EXPOSE_DEMO_TOKENS: "1"      # local demo convenience; never set this elsewhere
+      MF_LLM_ADAPTER: "null"              # no provider, no network, no key
+    volumes:
+      - memory-firewall-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    image: memory-firewall-dashboard:dev
+    ports:
+      - "127.0.0.1:5174:5174"
+    environment:
+      MF_API_PORT: "8002"
+    depends_on:
+      api:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+volumes:
+  memory-firewall-data:

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Memory Firewall — forensic lab</title>
+    <meta
+      name="description"
+      content="Provenance-aware trust boundary for agent memory and RAG: ingest and scan, trust map, memory ledger, quarantine review, claim conflicts, retrieval trace, time machine and attack lab."
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f1720'/%3E%3Cpath d='M16 5l9 4v7c0 6-4 9.5-9 11-5-1.5-9-5-9-11V9z' fill='none' stroke='%2341d1a7' stroke-width='2.2'/%3E%3Cpath d='M11.5 16.2l3 3 6-6.4' fill='none' stroke='%2341d1a7' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 4l10 4.5v7.8C26 23 21.5 27 16 28.6 10.5 27 6 23 6 16.3V8.5z" fill="none" stroke="currentColor" stroke-width="2.2" />
+          <path d="M11 16.3l3.3 3.3L21.3 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+        </svg>
+        <div>
+          <strong>Memory Firewall</strong>
+          <span class="tagline">Your agent shouldn't believe everything it remembers.</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <label class="field compact" id="principal-field">
+          <span>Acting as</span>
+          <select id="principal-select" aria-label="Acting as principal"></select>
+        </label>
+        <label class="field compact" id="token-field" hidden>
+          <span>Bearer token</span>
+          <input id="token-input" type="password" autocomplete="off" spellcheck="false"
+                 placeholder="paste a token" aria-label="Bearer token" />
+          <button id="token-apply" class="btn small ghost" type="button">Use</button>
+        </label>
+        <span id="identity-badge" class="badge badge-muted" title="Resolved server-side from the bearer token">identity: …</span>
+        <span id="health-badge" class="badge" title="Backend health">checking…</span>
+        <button id="theme-toggle" class="btn ghost" type="button" aria-label="Toggle colour theme">◐</button>
+      </div>
+    </header>
+
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Panes"></nav>
+
+    <main id="main" class="main">
+      <section id="pane-root" class="pane" role="tabpanel" aria-live="polite"></section>
+    </main>
+
+    <footer class="footer">
+      <span id="footer-versions">…</span>
+      <span class="footer-note">
+        Bounded claims: a closed set of signals, not all semantic poisoning. A digest proves
+        consistency with a separately stored expected value, not safety. Protection covers only
+        content routed through this pipeline. Synthetic demo data only.
+      </span>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <script type="module" src="js/main.js"></script>
+    <noscript>
+      <p style="padding: 2rem">
+        This dashboard is a live forensic view over the Memory Firewall API and needs JavaScript.
+        The same data is available from the API directly — see <code>/docs</code>.
+      </p>
+    </noscript>
+  </body>
+</html>

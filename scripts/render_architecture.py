@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""Render docs/assets/architecture.svg.
+
+Writes a hand-authored, self-contained dark SVG by default. That is a deliberate choice rather than
+a fallback: mermaid-cli's default theme renders dark text on a near-white fill, which is unreadable
+against GitHub's dark mode and does not match the product, and theming it well costs more than
+drawing the diagram properly once. `--mermaid` renders from `docs/architecture.mmd` instead when
+you want the generated version; the .mmd file is kept as the canonical textual source either way.
+
+Both describe the architecture actually implemented, not an aspirational one.
+"""
+
+from __future__ import annotations
+
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+MMD = ROOT / "docs" / "architecture.mmd"
+SVG = ROOT / "docs" / "assets" / "architecture.svg"
+
+FALLBACK_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 470" width="1180" height="470" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6b7d91"/>
+    </marker>
+    <style>
+      .box { fill:#131c28; stroke:#2e4055; stroke-width:1.5; rx:9 }
+      .gate { fill:#1a1430; stroke:#8b6fd6; stroke-width:2; rx:9 }
+      .store { fill:#0f2029; stroke:#41d1a7; stroke-width:1.5; rx:9 }
+      .block { fill:#2a141b; stroke:#f2667c; stroke-width:1.5; rx:9 }
+      .t { fill:#e6edf5; font-size:13px }
+      .s { fill:#9fb0c3; font-size:11px }
+      .lab { fill:#6b7d91; font-size:10.5px }
+      .edge { stroke:#6b7d91; stroke-width:1.4; fill:none; marker-end:url(#a) }
+      .hdr { fill:#41d1a7; font-size:11px; font-weight:600; letter-spacing:.08em }
+    </style>
+  </defs>
+  <rect width="1180" height="470" fill="#0b1016"/>
+  <text x="24" y="30" class="hdr">MEMORY FIREWALL — THREE ENFORCEMENT POINTS</text>
+
+  <rect class="box" x="24" y="60" width="170" height="64"/>
+  <text x="38" y="86" class="t">Documents, tool</text><text x="38" y="104" class="t">results, memories</text>
+
+  <rect class="box" x="224" y="60" width="180" height="64"/>
+  <text x="238" y="80" class="t">Normalise + hash</text>
+  <text x="238" y="98" class="s">NFKC, invisible chars,</text><text x="238" y="113" class="s">homoglyphs, tag decode</text>
+
+  <rect class="gate" x="434" y="52" width="190" height="80"/>
+  <text x="448" y="76" class="t">1. Pre-write policy</text>
+  <text x="448" y="94" class="s">detector + claim graph</text>
+  <text x="448" y="110" class="s">+ source trust tier</text>
+  <text x="448" y="126" class="lab">evidence spans recorded</text>
+
+  <rect class="store" x="690" y="30" width="190" height="60"/>
+  <text x="704" y="54" class="t">Active indexed chunks</text>
+  <text x="704" y="72" class="s">SQLite FTS5 + manifests</text>
+
+  <rect class="block" x="690" y="110" width="190" height="60"/>
+  <text x="704" y="134" class="t">Quarantine / review</text>
+  <text x="704" y="152" class="s">never indexed</text>
+
+  <rect class="gate" x="434" y="210" width="190" height="96"/>
+  <text x="448" y="234" class="t">2. Pre-retrieval guard</text>
+  <text x="448" y="252" class="s">tenant · per-principal ACL</text>
+  <text x="448" y="268" class="s">state · valid + system time</text>
+  <text x="448" y="284" class="s">integrity manifest</text>
+  <text x="448" y="300" class="lab">one SQL statement; fails closed</text>
+
+  <rect class="gate" x="690" y="218" width="190" height="80"/>
+  <text x="704" y="242" class="t">3. At-use guard</text>
+  <text x="704" y="260" class="s">context pack: chunk IDs,</text>
+  <text x="704" y="276" class="s">citations, tiers, risk tags</text>
+  <text x="704" y="292" class="lab">no evidence =&gt; no answer</text>
+
+  <rect class="box" x="946" y="218" width="200" height="80"/>
+  <text x="960" y="242" class="t">Agent / copilot</text>
+  <text x="960" y="260" class="s">receives only eligible</text>
+  <text x="960" y="276" class="s">chunks with provenance</text>
+
+  <rect class="box" x="24" y="210" width="170" height="96"/>
+  <text x="38" y="234" class="t">Query</text>
+  <text x="38" y="252" class="s">identity from bearer</text>
+  <text x="38" y="268" class="s">token only — never</text>
+  <text x="38" y="284" class="s">from a request field</text>
+
+  <rect class="box" x="24" y="356" width="1122" height="76"/>
+  <text x="38" y="380" class="t">Bitemporal evidence ledger — append-only validity rows (valid time AND system time) · risk findings · claims &amp; conflicts · review decisions · retrieval exposures · audit</text>
+  <text x="38" y="404" class="s">Feeds the forensic dashboard: ingest &amp; scan · trust map · memory ledger · quarantine inbox · claim conflicts · retrieval trace · time machine · attack lab</text>
+  <text x="38" y="422" class="lab">Bounded claim: this covers content routed through this pipeline. It detects a closed set of signals, not all semantic poisoning. A digest proves consistency with a separately stored expected value, not safety.</text>
+
+  <path class="edge" d="M194 92 H218"/>
+  <path class="edge" d="M404 92 H428"/>
+  <path class="edge" d="M624 80 H684"/>
+  <path class="edge" d="M624 108 H684"/>
+  <text x="634" y="72" class="lab">pass</text>
+  <text x="634" y="128" class="lab">suspicious</text>
+  <!-- active chunks feed the pre-retrieval guard; routed left of the quarantine box so the two
+       edges never overlap and the diagram cannot be misread -->
+  <path class="edge" d="M690 60 H666 V258 H628"/>
+  <!-- quarantine can only re-enter active memory through a reviewer-approved revision -->
+  <path class="edge" d="M880 140 H904 V60 H884"/>
+  <text x="912" y="106" class="lab">reviewer-approved</text>
+  <text x="912" y="120" class="lab">revision only</text>
+  <path class="edge" d="M194 258 H428"/>
+  <path class="edge" d="M624 258 H684"/>
+  <path class="edge" d="M880 258 H940"/>
+  <path class="edge" d="M529 306 V350"/>
+</svg>
+"""
+
+
+def main() -> int:
+    SVG.parent.mkdir(parents=True, exist_ok=True)
+    use_mermaid = "--mermaid" in sys.argv
+    mmdc = shutil.which("mmdc") if use_mermaid else None
+    if mmdc and MMD.exists():
+        proc = subprocess.run(
+            [mmdc, "-i", str(MMD), "-o", str(SVG), "-b", "transparent"],
+            capture_output=True,
+            text=True,
+        )
+        if proc.returncode == 0 and SVG.exists() and SVG.stat().st_size > 400:
+            print(f"rendered {SVG.relative_to(ROOT)} with mermaid-cli")
+            return 0
+        print(f"mermaid-cli failed ({proc.returncode}); writing the hand-authored SVG instead")
+    SVG.write_text(FALLBACK_SVG, encoding="utf-8")
+    print(f"wrote {SVG.relative_to(ROOT)} (hand-authored vector, no toolchain required)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

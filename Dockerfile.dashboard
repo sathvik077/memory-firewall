@@ -1,0 +1,29 @@
+# Memory Firewall — dashboard image.
+#
+# The dashboard has zero runtime dependencies: TypeScript is compiled to native ES modules at build
+# time and the result is static files. So the final stage is a tiny Python image serving static
+# files with security headers, not a Node runtime — a smaller attack surface for a security tool's
+# own UI, which is the point.
+
+FROM node:22-bookworm-slim AS build
+WORKDIR /build
+COPY apps/dashboard/package.json apps/dashboard/package-lock.json* apps/dashboard/tsconfig.json ./
+# `npm ci` works offline here because there are no runtime dependencies; TypeScript is the only
+# devDependency and the build falls back to a global compiler if the registry is unreachable.
+RUN npm ci --no-audit --no-fund || npm install --no-audit --no-fund || npm i -g typescript
+COPY apps/dashboard/ ./
+RUN npm run build
+
+FROM python:3.12-slim-bookworm
+ENV PYTHONUNBUFFERED=1 MF_WEB_PORT=5174 MF_API_PORT=8002
+WORKDIR /app
+COPY --from=build /build/dist /app/apps/dashboard/dist
+COPY scripts/serve_dashboard.py /app/scripts/serve_dashboard.py
+COPY packages/ /app/packages/
+RUN useradd --system --create-home --uid 10002 dashboard && chown -R dashboard:dashboard /app
+USER dashboard
+ENV PYTHONPATH=/app/packages/memory_firewall
+EXPOSE 5174
+HEALTHCHECK --interval=15s --timeout=4s --start-period=5s --retries=3 \
+  CMD python -c "import urllib.request,sys;sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:5174/',timeout=3).status==200 else 1)"
+CMD ["python", "/app/scripts/serve_dashboard.py", "--host", "0.0.0.0", "--port", "5174"]

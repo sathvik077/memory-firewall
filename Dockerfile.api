@@ -1,0 +1,47 @@
+# Memory Firewall — API image.
+#
+# Dev/demo image. It binds to 0.0.0.0 *inside the container* only because that is how a container
+# is reachable at all; compose.yaml publishes it to 127.0.0.1 on the host, so nothing is exposed
+# beyond localhost. A container on localhost is not a secure hosted production deployment, and
+# docs/SECURITY.md says exactly what would still be required for that.
+
+FROM python:3.12-slim-bookworm AS base
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    MF_DB_PATH=/data/memory-firewall.sqlite3 \
+    MF_API_HOST=0.0.0.0 \
+    MF_API_PORT=8002
+
+# SQLite in the official python image is built with FTS5; this fails the build loudly if that ever
+# stops being true, rather than shipping an image whose retrieval silently cannot work.
+RUN python -c "import sqlite3; sqlite3.connect(':memory:').execute('CREATE VIRTUAL TABLE t USING fts5(x)'); print('FTS5 OK', sqlite3.sqlite_version)"
+
+WORKDIR /app
+
+COPY pyproject.toml README.md ./
+COPY packages/ ./packages/
+COPY apps/api/ ./apps/api/
+
+RUN pip install --no-cache-dir \
+      "fastapi>=0.118,<0.200" \
+      "pydantic>=2.11,<3" \
+      "pydantic-settings>=2.7,<3" \
+      "uvicorn[standard]>=0.37,<0.40" \
+      "python-multipart>=0.0.20,<0.1"
+
+# Run as a non-root user; the data volume is the only writable path it needs.
+RUN useradd --system --create-home --uid 10001 firewall \
+ && mkdir -p /data && chown -R firewall:firewall /data /app
+USER firewall
+
+ENV PYTHONPATH=/app/packages/memory_firewall:/app/apps/api
+VOLUME ["/data"]
+EXPOSE 8002
+
+HEALTHCHECK --interval=15s --timeout=4s --start-period=10s --retries=3 \
+  CMD python -c "import urllib.request,sys;sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8002/healthz',timeout=3).status==200 else 1)"
+
+CMD ["python", "-m", "uvicorn", "app.main:app", "--app-dir", "/app/apps/api", \
+     "--host", "0.0.0.0", "--port", "8002"]

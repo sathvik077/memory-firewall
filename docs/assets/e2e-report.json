@@ -1,0 +1,172 @@
+{
+  "passed": 33,
+  "total": 33,
+  "checks": [
+    {
+      "name": "backend reachable and identity resolved server-side",
+      "passed": true,
+      "detail": "support-admin \u00b7 reviewer \u00b7 tenant support"
+    },
+    {
+      "name": "health badge reports ok",
+      "passed": true,
+      "detail": "backend ok"
+    },
+    {
+      "name": "all eight panes present",
+      "passed": true,
+      "detail": "8 tabs"
+    },
+    {
+      "name": "poison ingested through the UI was QUARANTINED",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "rule IDs shown with the decision",
+      "passed": true,
+      "detail": "detector rule ids rendered"
+    },
+    {
+      "name": "evidence span highlighted in the document",
+      "passed": true,
+      "detail": "4 highlighted span(s)"
+    },
+    {
+      "name": "human-readable reason shown",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "trust tiers rendered from server state",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "live counters present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "queue shows withheld content",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "review controls present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "evidence and confidence semantics shown",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "no raw script tag survived into the DOM",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "guard reported as enforced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "trusted policy returned with a citation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "poisoned text absent from the guarded result",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deterministic answer rendered with its citation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exposure log populated",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "claim conflict surfaced with both values",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "conflict framed as a review state, not a truth verdict",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "validity rows show both time axes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "an open current-belief row is marked",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "content digests shown",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "snapshot replay rendered",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "both time coordinates shown",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "scenario executed in the browser and reported PASS",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "assertions listed with expected vs observed",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "unguarded baseline exposes the poison",
+      "passed": true,
+      "detail": "baseline column shows the 2-day poison"
+    },
+    {
+      "name": "guarded column withholds it",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "baseline clearly labelled as not product output",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "switching identity switches tenant",
+      "passed": true,
+      "detail": "other-reader \u00b7 reader \u00b7 tenant other"
+    },
+    {
+      "name": "other tenant sees no support-tenant policy text",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "no console or page errors",
+      "passed": true,
+      "detail": "clean"
+    }
+  ],
+  "screenshots": []
+}
