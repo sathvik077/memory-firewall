@@ -5,7 +5,7 @@ description = "Provenance-aware trust boundary for agent memory and RAG: pre-wri
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
-authors = [{ name = "Memory Firewall contributors" }]
+authors = [{ name = "Sathvik", email = "s8sathvik@gmail.com" }]
 keywords = ["rag-security", "prompt-injection", "memory-poisoning", "provenance", "ai-security"]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -36,8 +36,8 @@ embeddings = ["scikit-learn>=1.6,<2", "numpy>=2.1,<3"]
 memory-firewall = "memory_firewall.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/example/memory-firewall"
-Documentation = "https://github.com/example/memory-firewall/tree/main/docs"
+Homepage = "https://github.com/sathvik077/memory-firewall"
+Documentation = "https://github.com/sathvik077/memory-firewall/tree/main/docs"
 
 [build-system]
 requires = ["hatchling>=1.27"]
