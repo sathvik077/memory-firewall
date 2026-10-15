@@ -236,8 +236,9 @@ distinguishes **failed** from **could not run here** — see
 
 | | |
 |---|---|
-| Tests | **302 passing**, 0 skipped (unit · integration · security · e2e) |
-| Security suite | **113 tests**, and CI fails if any is skipped |
+| Tests | **302 passing**, 0 skipped (unit · integration · security · e2e), under real pytest |
+| Security suite | **119 tests**, and CI fails if any is skipped |
+| Typecheck | **mypy clean** across 32 source files, with `disallow_untyped_defs` |
 | Release seed vectors | **12/12** from `TEST_VECTORS.json`, each in its own disposable database |
 | Offline scenarios | **12/12**, 61 assertions, each in its own disposable database |
 | Browser checks | **33/33** against the live app, zero console errors |

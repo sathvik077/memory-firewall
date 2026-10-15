@@ -7,35 +7,42 @@ reading; every line corresponds to a command that ran.
 
 ## Environment
 
-| | |
-|---|---|
-| **Date** | 2026-10-14 |
-| **OS** | Linux 6.18.44 x86_64 (container) |
-| **Python** | 3.13.16 |
-| **SQLite** | 3.45.1, **FTS5 present** (asserted at startup; the engine refuses to run without it) |
-| **Node** | v22.22.0 |
-| **Ruff** | 0.16.8 |
-| **Browser** | Chromium via Playwright 1.56.0 |
-| **Database** | `data/memory-firewall.sqlite3` + `data/memory-firewall.sqlite3.manifests` |
-| **Network** | **No outbound access to package registries.** `pypi.org`, `files.pythonhosted.org`, `registry.npmjs.org` and `registry-1.docker.io` all return **403** from the egress proxy. |
+Two runs are reported. The **first** (2026-10-14) was made in a sandbox whose egress policy blocked
+every package registry, so parts of the toolchain had to be substituted. The **second**
+(2026-10-15) was made after registry access became available, and re-ran everything against the
+real toolchain. Where the two disagree, the second supersedes the first; the first is kept because
+deleting it would hide which results were once produced by a substitute.
 
-### What that constraint changed
+| | Run 1 — 2026-10-14 | Run 2 — 2026-10-15 (current) |
+|---|---|---|
+| **OS** | Linux 6.18.44 x86_64 (container) | Linux 6.18.44 x86_64 (container) |
+| **Python** | 3.13.16 | **3.12.3** (the contract's floor, and CI's version) |
+| **SQLite** | 3.45.1, FTS5 present | 3.45.1, FTS5 present |
+| **Node** | v22.22.0 | v22.22.0 |
+| **Installer** | none (no registry) | **uv 0.11.32**, `uv sync --extra dev --locked` against a committed `uv.lock` |
+| **pytest** | substituted by `scripts/pytest_fallback.py` | **real pytest 8.4.2** |
+| **HTTP server** | substituted by the fallback adapter | **real FastAPI 0.143.1 on uvicorn 0.39.0** |
+| **Ruff** | 0.16.8 | 0.17.0 |
+| **mypy** | not installable — BLOCKED | **1.20.2** |
+| **Browser** | Chromium via Playwright 1.56.0 | Chromium via Playwright 1.56.0 |
+| **Network** | registries **403** | registries reachable |
 
-Three things, each with a consequence recorded here rather than hidden:
+### What run 2 changed
 
-1. **`pytest` could not be installed.** The suites ran under `scripts/pytest_fallback.py`, which
-   executes the same unmodified test files and supports a documented subset of pytest (fixtures
-   including `yield` fixtures and `tmp_path`, `pytest.raises`, `pytest.mark`, `parametrize`,
-   `unittest.TestCase`, `-k`/`-m`). It does **not** implement plugins, coverage, xdist, monkeypatch
-   or assertion rewriting. The tests need no change to run under real pytest.
-2. **`fastapi` could not be installed.** `apps/api/app/main.py` is the contracted FastAPI app and is
-   what the Docker image runs; it could not be started here. The live stack served `/api/*` through
-   the fallback adapter in `scripts/serve_dashboard.py`, which calls the **same engine** — only the
-   routing layer differs, and `tests/integration/test_route_parity.py` asserts the two cannot
-   diverge. **Every browser and HTTP result below was produced against the fallback adapter.**
-3. **`mypy` and Docker could not run at all.** Recorded as NOT VERIFIED with retry commands.
-
-`ruff` turned out to be present and was run for real.
+1. **The suites ran under real pytest.** Same 302 tests, same result: `302 passed, 0 failed,
+   0 skipped`. The fallback runner had not been hiding a failure.
+2. **The live stack ran the real FastAPI app.** `./scripts/devstack.sh start` under the project
+   venv starts `uvicorn app.main:app`; the `server: uvicorn` response header confirms it. All 33
+   browser checks pass against it, so the browser evidence below is no longer produced by a
+   substitute.
+3. **mypy ran and is now a passing gate**, not a blocked one — after 24 real errors were fixed
+   (see the defect log).
+4. **Two defects surfaced that only the real toolchain could surface.** Both are recorded in the
+   defect log: a mypy-visible `.upper()` on a possibly-`None` field, and a security-gate script
+   that silently counted zero executed tests under real pytest.
+5. **Docker remains BLOCKED here** — no daemon in this sandbox. It is the single remaining
+   unverified gate locally, and the project's own GitHub Actions run reports the
+   "Container images build" job as successful.
 
 ---
 
@@ -43,15 +50,17 @@ Three things, each with a consequence recorded here rather than hidden:
 
 ### Engine and suites
 
+All commands below are from run 2, under `uv run` (real pytest, real FastAPI).
+
 | Command | Exit | Result |
 |---|---|---|
 | `python -m memory_firewall.cli doctor` | 0 | FTS5 OK, SQLite 3.45.1, schema `2026-10-14.1` |
-| `python scripts/pytest_fallback.py tests` | 0 | **selected=302 passed=302 failed=0 errors=0 skipped=0** |
-| `… tests/unit` | 0 | 110 passed |
-| `… tests/integration` | 0 | 78 passed |
-| `… tests/security` | 0 | 113 passed |
-| `… tests/integration/test_release_vectors.py` | 0 | **14 passed** — all 12 `TEST_VECTORS.json` cases, each in its own disposable database |
-| `python scripts/assert_no_skipped_security.py` | 0 | **executed=113 skipped=0** — "every security test executed and passed" |
+| `pytest tests` | 0 | **302 passed, 0 failed, 0 skipped** in 24.3s |
+| `pytest tests/unit` | 0 | 107 passed |
+| `pytest tests/integration` | 0 | 75 passed |
+| `pytest tests/security` | 0 | 119 passed |
+| `pytest tests/integration/test_release_vectors.py` | 0 | **14 passed** — all 12 `TEST_VECTORS.json` cases, each in its own disposable database |
+| `python scripts/assert_no_skipped_security.py` | 0 | **executed=119 skipped=0** — "every security test executed and passed" |
 | `python -m memory_firewall.cli scenarios` | 0 | **12/12 scenarios passed (64 assertions)** |
 | `python -m memory_firewall.cli smoke` | 0 | verdict **PASS** across 6 mandatory scenarios |
 | `python examples/sdk_quickstart.py` | 0 | trusted ACTIVE, poison QUARANTINED, answer cited `company-policy#v1` |
@@ -61,10 +70,11 @@ Three things, each with a consequence recorded here rather than hidden:
 
 | Command | Exit | Result |
 |---|---|---|
-| `ruff check .` | 0 | **All checks passed!** |
+| `ruff check .` | 0 | **All checks passed!** (ruff 0.17.0) |
 | `ruff format --check .` | 0 | **71 files already formatted** |
 | `npm run build --prefix apps/dashboard` | 0 | typecheck + emit, **offline** (zero runtime dependencies) |
-| `python -m mypy` | — | **BLOCKED**, not installable. Retry: `uv sync --extra dev && python -m mypy` |
+| `mypy` | 0 | **Success: no issues found in 32 source files** (mypy 1.20.2, `disallow_untyped_defs`) |
+| `docker build -f Dockerfile.api .` | — | **BLOCKED**, no daemon here. Retry: `docker build -f Dockerfile.api -t memory-firewall-api:dev .` |
 
 Ruff found three genuine defects that no executed test could have caught, all fixed:
 
@@ -80,8 +90,8 @@ excluded from the formatter.
 
 ### Live application
 
-Started with `./scripts/devstack.sh start` — dashboard on `127.0.0.1:5174`, `/api/*` served in
-process by the fallback adapter.
+Started with `uv run ./scripts/devstack.sh start` — dashboard on `127.0.0.1:5174`, `/api/*` served
+by **the real FastAPI app on uvicorn** (`server: uvicorn` in the response headers).
 
 | Command | Exit | Result |
 |---|---|---|
@@ -119,14 +129,16 @@ Held-out perturbation split: recall **0.889** vs **0.940** primary.
 | `git ls-files private/` | empty |
 | `git ls-files .env` | empty |
 | `git ls-files '*.sqlite3'` | empty |
-| `git ls-files \| wc -l` | 124 tracked files |
+| `git ls-files \| wc -l` | 137 tracked files (136 + `uv.lock`) |
 
 ### `make verify`
 
-Last full run: **16 passed · 3 failed · 2 blocked**, exit 1. The three failures were *this
-document and `ACCEPTANCE_STATUS.md` not yet existing*, plus the two Ruff gates — all since fixed.
-The two blocked checks (mypy, Docker) remain blocked and are reported as NOT VERIFIED, never as
-passing. `docs/verify-report.json` carries the machine-readable record.
+Last full run (run 2, with the stack up): **20 passed · 0 failed · 1 blocked**, exit 2. The single
+blocked check is Docker, which has no daemon in this sandbox; it is reported as NOT VERIFIED,
+never as passing. `docs/verify-report.json` carries the machine-readable record.
+
+Exit 2 — not 0 — is the correct outcome and the script is designed to produce it: a check that
+could not run is not a check that passed.
 
 ---
 
@@ -151,6 +163,9 @@ re-verified:
 | 12 | **red-team review** | Readers could read not-yet-effective content via a future `as_of_valid`. Now tagged `NOT_YET_IN_FORCE`, with a config switch to restrict it; not blocked by default because MF-SEED-05 requires readers to ask about future dates. |
 | 13 | **red-team review** | The bypass suite exercised 7 of the 10 predicates the guard enforces. Three modes added; now 10/10. |
 | 14 | `ruff` | `sys` used without import on a FastAPI route — would have raised `NameError` in any environment that *could* run FastAPI. |
+| 15 | **real `mypy`** | `_answer_refund_question` called `.upper()` on a claim's `region`, typed `str \| float \| None`. A claim parsed without a region would have raised `AttributeError` while building an answer — on the answer path, not a test path. Both scope fields are now narrowed before formatting. |
+| 16 | **real `pytest` in CI** | `scripts/assert_no_skipped_security.py` scraped `"N passed"` out of console output, but `addopts` already contains `-q`, so its own extra `-q` made `-qq` and suppressed the summary line. The gate that exists to catch silently skipped security tests therefore reported **executed=0** and failed the build — against a suite that had just passed 119/119. It now reads counts from a JUnit XML report, which no verbosity flag can take away. |
+| 17 | **real `mypy`** | `engine.document_versions` built `out` as an inferred `dict[str, Collection[Any]]`, so appending to `out["versions"]` was a type error; and 18 defensive `# type: ignore` comments written blind (while mypy could not run) were masking three genuine `list(object)` call errors in the detector. Replaced with typed accessors `NormalizationResult.events()` and `event_index()`. |
 
 Found and **not** fixed, deliberately: the red-team review wrote **10 original payloads that land
 ACTIVE**. That is the honest ceiling of a deterministic detector, published in
@@ -162,20 +177,19 @@ response is provenance tagging — every chunk from a weakly-trusted source is t
 
 ## Limitations and unresolved items
 
-1. **Not verified here:** mypy, Docker image builds, GitHub Actions. All three are blocked by this
-   environment, all three have retry commands in `docs/ACCEPTANCE_STATUS.md`.
-2. **The evidence above came from the fallback HTTP adapter**, not FastAPI. The engine is identical
-   and route parity is asserted, but the FastAPI app itself has never been started.
-3. **No `uv.lock` or `package-lock.json` is committed** — neither could be generated without a
-   registry. `pyproject.toml` pins bounded ranges with upper bounds and the single npm
-   devDependency is pinned to an exact version. Run `uv sync` and `npm install` once with network
-   access and commit the locks.
-4. **The test runner was not pytest.** See the environment note above.
-5. **The benchmark is synthetic, single-domain and single-author**, with no adaptive adversary.
+1. **Not verified here: Docker image builds.** No daemon in this sandbox. Retry:
+   `docker build -f Dockerfile.api -t memory-firewall-api:dev .`. The project's GitHub Actions run
+   reports its "Container images build" job as successful, which is evidence from CI rather than
+   from this machine.
+2. **No `package-lock.json` is committed.** `uv.lock` now is, and CI installs with
+   `uv sync --extra dev --locked`, so the Python side is reproducible. The npm side has a single
+   devDependency pinned to an exact version; run `npm install` once with registry access and
+   commit `apps/dashboard/package-lock.json` to close the gap.
+3. **The benchmark is synthetic, single-domain and single-author**, with no adaptive adversary.
    Held-out performance is reported separately precisely because of this.
-6. **Latency figures describe a small local corpus on one machine** and are not a general
+4. **Latency figures describe a small local corpus on one machine** and are not a general
    performance claim.
-7. **Docker Compose on localhost is not a deployment.** `docs/SECURITY.md` §"The demo profile is not
+5. **Docker Compose on localhost is not a deployment.** `docs/SECURITY.md` §"The demo profile is not
    a deployment" lists what would still be required.
 
 ## Reproducing this

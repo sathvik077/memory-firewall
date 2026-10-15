@@ -116,8 +116,14 @@ React later. The panes are thin over a typed API client, so the port would be me
 carries a fallback adapter that serves the same routes in-process over the same engine, used only
 when FastAPI is not importable.
 
-**Why.** Same reason as D7: FastAPI could not be installed, and without *some* HTTP surface the
-dashboard, the browser E2E and the screenshots would all be unverifiable.
+**Why.** Same reason as D7: FastAPI could not be installed in the original build environment, and
+without *some* HTTP surface the dashboard, the browser E2E and the screenshots would all be
+unverifiable.
+
+**Status.** Resolved as of 2026-10-15. FastAPI is installed, `make dev` and CI both start the real
+app on uvicorn, and the browser suite passes 33/33 against it. The adapter stays because it costs
+nothing to keep and makes the dashboard usable with zero Python dependencies — but it is now the
+fallback it was always meant to be, not the thing being tested.
 
 **Cost, and what it caused.** Two routing layers can drift — and they did. An independent review
 found the fallback defaulting the demo-token listing *on* while FastAPI defaulted it *off*, which
@@ -151,7 +157,18 @@ written-but-unexecuted tests, which is exactly the false completion the contract
 
 **Cost.** The fallback does not implement plugins, coverage, xdist, monkeypatch or assertion
 rewriting, so failure output is a plain `AssertionError`. `docs/VERIFICATION.md` records which
-runner produced which numbers, and the tests run unchanged under real pytest.
+runner produced which numbers.
+
+**Status.** Resolved as of 2026-10-15: all 302 tests now run under real pytest 8.4.2 with the same
+result, so the substitute was not hiding a failure. `make test` prefers real pytest whenever it is
+importable and falls back only otherwise.
+
+**What this cost anyway.** Writing the harness against the fallback's output format left a real
+bug in `scripts/assert_no_skipped_security.py`: it scraped `"N passed"` from console text, and
+under real pytest the project's own `-q` in `addopts` plus the script's `-q` produced `-qq`, which
+prints no summary line. The security-skip gate then read zero executed tests and failed CI against
+a suite that had just passed 119/119. It now reads a JUnit XML report. The general lesson is in
+the cost column of D7 as well: a substitute you build the tooling around stops being invisible.
 
 ---
 

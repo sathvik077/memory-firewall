@@ -29,7 +29,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 from ._version import DETECTOR_VERSION
-from .normalize import NormalizationResult
+from .normalize import NormalizationResult, event_index
 
 __all__ = [
     "RULES",
@@ -672,10 +672,9 @@ def _mitigation_applies(reasons: Sequence[str]) -> bool:
 def _encoding_findings(norm: NormalizationResult) -> list[Finding]:
     out: list[Finding] = []
     raw = norm.raw
-    report = norm.report
 
-    invisible = list(report.get("invisible_removed", []))  # type: ignore[arg-type]
-    tag_chars = list(report.get("tag_characters_decoded", []))  # type: ignore[arg-type]
+    invisible = norm.events("invisible_removed")
+    tag_chars = norm.events("tag_characters_decoded")
 
     if tag_chars:
         # Unicode tag characters have no legitimate use in prose: the only reason to encode text in
@@ -683,11 +682,8 @@ def _encoding_findings(norm: NormalizationResult) -> list[Finding]:
         # own, independently of what the decoded text turns out to say — and because normalisation
         # decodes rather than deletes them, the decoded instruction is also scanned by every other
         # rule.
-        idx = int(tag_chars[0].get("raw_index", 0))  # type: ignore[union-attr]
-        decoded = "".join(
-            str(e.get("decoded_to") or "")
-            for e in tag_chars  # type: ignore[union-attr]
-        )
+        idx = event_index(tag_chars[0])
+        decoded = "".join(str(e.get("decoded_to") or "") for e in tag_chars)
         out.append(
             Finding(
                 rule_id="MF-R013",
@@ -710,7 +706,7 @@ def _encoding_findings(norm: NormalizationResult) -> list[Finding]:
         # merely sitting at a boundary (often harmless copy-paste residue from a web page).
         intra_word = False
         for entry in invisible:
-            idx = int(entry.get("raw_index", -1))  # type: ignore[union-attr]
+            idx = event_index(entry, -1)
             before = raw[idx - 1] if idx - 1 >= 0 else ""
             after = raw[idx + 1] if idx + 1 < len(raw) else ""
             if before.isalnum() and after.isalnum():
@@ -720,8 +716,8 @@ def _encoding_findings(norm: NormalizationResult) -> list[Finding]:
         # copy-paste residue; a document sprinkled with four or more is somebody hiding something,
         # whether or not any single one sits inside a word.
         many = len(invisible) >= 4
-        idx = int(invisible[0].get("raw_index", 0))  # type: ignore[union-attr]
-        codepoints = sorted({str(e.get("codepoint")) for e in invisible})  # type: ignore[union-attr]
+        idx = event_index(invisible[0])
+        codepoints = sorted({str(e.get("codepoint")) for e in invisible})
         out.append(
             Finding(
                 rule_id="MF-R005",
@@ -746,10 +742,10 @@ def _encoding_findings(norm: NormalizationResult) -> list[Finding]:
             )
         )
 
-    bidi = list(report.get("bidi_removed", []))  # type: ignore[arg-type]
+    bidi = norm.events("bidi_removed")
     if bidi:
-        overrides = [e for e in bidi if str(e.get("codepoint")) in {"U+202D", "U+202E"}]  # type: ignore[union-attr]
-        idx = int((overrides or bidi)[0].get("raw_index", 0))  # type: ignore[union-attr]
+        overrides = [e for e in bidi if str(e.get("codepoint")) in {"U+202D", "U+202E"}]
+        idx = event_index((overrides or bidi)[0])
         out.append(
             Finding(
                 rule_id="MF-R006",
@@ -763,19 +759,19 @@ def _encoding_findings(norm: NormalizationResult) -> list[Finding]:
                 evidence_space="raw",
                 normalization_applied=(
                     f"removed {len(bidi)} bidirectional control(s): "
-                    + ", ".join(sorted({str(e.get("codepoint")) for e in bidi}))  # type: ignore[union-attr]
+                    + ", ".join(sorted({str(e.get("codepoint")) for e in bidi}))
                 ),
             )
         )
 
-    confusables = list(report.get("confusables_mapped", []))  # type: ignore[arg-type]
+    confusables = norm.events("confusables_mapped")
     if confusables:
         # Only escalate when the folding changed a word that matters in this domain; a Cyrillic
         # letter inside ordinary Russian prose is not an attack.
         sensitive_hit = False
         normalized = norm.normalized
         for entry in confusables:
-            raw_idx = int(entry.get("raw_index", 0))  # type: ignore[union-attr]
+            raw_idx = event_index(entry)
             try:
                 n_idx = norm.offset_map.index(raw_idx)
             except ValueError:
@@ -787,7 +783,7 @@ def _encoding_findings(norm: NormalizationResult) -> list[Finding]:
             if word in SENSITIVE_WORDS:
                 sensitive_hit = True
                 break
-        idx = int(confusables[0].get("raw_index", 0))  # type: ignore[union-attr]
+        idx = event_index(confusables[0])
         out.append(
             Finding(
                 rule_id="MF-R007",

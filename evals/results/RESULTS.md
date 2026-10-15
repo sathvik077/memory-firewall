@@ -1,8 +1,8 @@
 # Memory Firewall — evaluation scorecard
 
-Generated **2026-10-14T19:53:36.544193Z** · engine `0.1.0` · detector `mf-detector/1.0.0` · policy `mf-policy/1.0.0`
+Generated **2026-10-15T03:19:14.154673Z** · engine `0.1.0` · detector `mf-detector/1.0.0` · policy `mf-policy/1.0.0`
 
-Environment: Python 3.13.16 on Linux-6.18.44-fc-v114-x86_64-with-glibc2.39.
+Environment: Python 3.12.3 on Linux-6.18.44-fc-v114-x86_64-with-glibc2.39.
 
 > Every number below was produced by `make eval` on the committed dataset. Nothing here is estimated, extrapolated or hand-written. Latency figures describe a small local corpus on one machine and are not a general performance claim.
 
@@ -49,8 +49,8 @@ Everything ingested is indexed and retrievable. The control: what a normal RAG p
 | benign withheld rate | 0.0% |
 | false quarantine rate | 0.0% (0/93) |
 | stale-index exposure | 10/10 |
-| ingestion p50 / p95 | 13.29 ms / 20.23 ms |
-| retrieval p50 / p95 | 1.693 ms / 2.625 ms |
+| ingestion p50 / p95 | 7.507 ms / 11.21 ms |
+| retrieval p50 / p95 | 1.377 ms / 2.024 ms |
 
 Held-out comparison (a large gap indicates overfitting to the author's phrasing):
 
@@ -76,8 +76,8 @@ A literal phrase blocklist at ingestion, no normalisation and no retrieval gate 
 | benign withheld rate | 7.5% |
 | false quarantine rate | 7.5% (7/93) |
 | stale-index exposure | 10/10 |
-| ingestion p50 / p95 | 14.5 ms / 19.35 ms |
-| retrieval p50 / p95 | 1.471 ms / 2.31 ms |
+| ingestion p50 / p95 | 8.098 ms / 10.31 ms |
+| retrieval p50 / p95 | 1.654 ms / 2.032 ms |
 
 Held-out comparison (a large gap indicates overfitting to the author's phrasing):
 
@@ -103,8 +103,8 @@ The real detector, claim graph and write policy, but retrieval performs no tenan
 | benign withheld rate | 12.9% |
 | false quarantine rate | 2.1% (2/93) |
 | stale-index exposure | 10/10 |
-| ingestion p50 / p95 | 14.35 ms / 20.73 ms |
-| retrieval p50 / p95 | 1.457 ms / 2.64 ms |
+| ingestion p50 / p95 | 7.692 ms / 10.78 ms |
+| retrieval p50 / p95 | 1.076 ms / 1.361 ms |
 
 Held-out comparison (a large gap indicates overfitting to the author's phrasing):
 
@@ -130,8 +130,8 @@ Both enforcement points. The product.
 | benign withheld rate | 12.9% |
 | false quarantine rate | 2.1% (2/93) |
 | stale-index exposure | 0/10 |
-| ingestion p50 / p95 | 13.69 ms / 19.65 ms |
-| retrieval p50 / p95 | 9.422 ms / 18.85 ms |
+| ingestion p50 / p95 | 7.823 ms / 10.99 ms |
+| retrieval p50 / p95 | 5.506 ms / 8.705 ms |
 
 Held-out comparison (a large gap indicates overfitting to the author's phrasing):
 
@@ -156,7 +156,7 @@ These targets were written in `CLAUDE.md` §8 **before** the system was built. T
 | recall at least 90pct for defined families | >= 0.90 recall (malicious withheld) | 0.9294 | yes |
 | false quarantine at most 10pct | <= 0.10 false quarantine among benign | 0.0215 | yes |
 | curated qa recall at 3 at least 95pct | >= 0.95 top-3 recall of eligible authoritative chunks (curated QA set) | 1 | yes |
-| p95 retrieval overhead under 100ms | < 100 ms p95 guarded retrieval on a small local corpus | 18.85 | yes |
+| p95 retrieval overhead under 100ms | < 100 ms p95 guarded retrieval on a small local corpus | 8.705 | yes |
 
 **curated qa recall at 3 at least 95pct** — Unmet by []. The same question is missed identically by the unguarded baseline, so the shortfall is bm25 ambiguity between several refund documents rather than anything the guard withheld (guard-attributable delta: 0.0).
 

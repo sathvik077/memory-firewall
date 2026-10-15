@@ -1475,7 +1475,7 @@ class MemoryFirewallEngine:
                 " parent_version_id FROM document_versions WHERE document_id = ? ORDER BY version",
                 (document_id,),
             ).fetchall()
-            out = {"document": dict(doc), "versions": []}
+            out: dict[str, Any] = {"document": dict(doc), "versions": []}
             for v in versions:
                 validity = conn.execute(
                     "SELECT state, effective_from, effective_to, system_recorded_from,"

@@ -136,11 +136,16 @@ def deterministic_answer(result: RetrievalResult) -> tuple[str | None, list[dict
     entry = best[1]
     days = entry["value_days"]
     days_text = f"{days:g}" if isinstance(days, (int, float)) else str(days)
+    # `entry` is a JSON-shaped dict, so its values are str | float | None. Narrow the two scope
+    # fields to str before formatting: a claim with a missing region or tier means "unscoped",
+    # which is exactly the default, and must not raise while building an answer.
+    region = str(entry["region"] or "global")
+    customer_tier = str(entry["customer_tier"] or "standard")
     scope = []
-    if entry["region"] != "global":
-        scope.append(f"region {entry['region'].upper()}")
-    if entry["customer_tier"] != "standard":
-        scope.append(f"{entry['customer_tier']} customers")
+    if region != "global":
+        scope.append(f"region {region.upper()}")
+    if customer_tier != "standard":
+        scope.append(f"{customer_tier} customers")
     scope_text = f" ({', '.join(scope)})" if scope else ""
     answer = (
         f"The refund window{scope_text} is {days_text} days, per {entry['citation']} "

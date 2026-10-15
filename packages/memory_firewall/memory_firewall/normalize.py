@@ -32,6 +32,7 @@ __all__ = [
     "CONFUSABLE_MAP",
     "INVISIBLE_CHARS",
     "NormalizationResult",
+    "event_index",
     "normalize_text",
 ]
 
@@ -150,6 +151,20 @@ class NormalizationResult:
     offset_map: list[int] = field(default_factory=list)
     report: dict[str, object] = field(default_factory=dict)
 
+    def events(self, key: str) -> list[dict[str, object]]:
+        """The per-character normalisation events recorded in :attr:`report` under ``key``.
+
+        :attr:`report` is a JSON-serialisable ``dict[str, object]``, so pulling an event list out
+        of it needs a narrowing step. Doing that narrowing once, here, keeps every caller
+        statically typed instead of scattering casts across the detector. An absent or
+        unexpectedly shaped entry yields an empty list rather than raising, because a malformed
+        report must not be able to crash a scan.
+        """
+        value = self.report.get(key)
+        if not isinstance(value, list):
+            return []
+        return [event for event in value if isinstance(event, dict)]
+
     def raw_span(self, norm_start: int, norm_end: int) -> tuple[int, int]:
         """Translate a half-open normalised span to a half-open raw span.
 
@@ -175,6 +190,20 @@ class NormalizationResult:
     @property
     def had_confusables(self) -> bool:
         return bool(self.report.get("confusables_mapped"))
+
+
+def event_index(event: dict[str, object], default: int = 0) -> int:
+    """The ``raw_index`` of a normalisation event, as an int.
+
+    Every event this module writes carries an integer ``raw_index``. The lookup still returns
+    ``object`` to a type checker, and a report that has been round-tripped through JSON by a
+    caller could carry something else, so an unusable value falls back to ``default`` instead of
+    raising mid-scan.
+    """
+    value = event.get("raw_index", default)
+    if isinstance(value, bool) or not isinstance(value, int):
+        return default
+    return value
 
 
 def normalize_text(raw: str) -> NormalizationResult:

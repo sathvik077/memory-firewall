@@ -23,6 +23,7 @@ one came from an authority and which did not.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -271,7 +272,7 @@ def extract_claims(
     source_id: str = "",
     chunk_id: str = "",
     default_effective_from: datetime | None = None,
-    offset_translate: object = None,
+    offset_translate: Callable[[int, int], tuple[int, int]] | None = None,
 ) -> list[Claim]:
     """Extract refund-window claims. Returns ``[]`` for anything outside the typed schema."""
     default_effective = default_effective_from or now()
@@ -296,8 +297,8 @@ def extract_claims(
                 continue
             seen.add(key)
             start, end = m.start(), m.end()
-            if callable(offset_translate):
-                start, end = offset_translate(start, end)  # type: ignore[misc]
+            if offset_translate is not None:
+                start, end = offset_translate(start, end)
             out.append(
                 Claim(
                     subject=REFUND_SUBJECT,
@@ -365,8 +366,8 @@ def extract_claims(
                     continue
                 seen.add(dedupe)
                 start, end = abs_start, abs_end
-                if callable(offset_translate):
-                    start, end = offset_translate(abs_start, abs_end)  # type: ignore[misc]
+                if offset_translate is not None:
+                    start, end = offset_translate(abs_start, abs_end)
                 out.append(
                     Claim(
                         subject=REFUND_SUBJECT,

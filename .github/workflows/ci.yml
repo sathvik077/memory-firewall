@@ -37,7 +37,7 @@ jobs:
           enable-cache: true
 
       - name: Install (pinned by uv.lock)
-        run: uv sync --extra dev
+        run: uv sync --extra dev --locked
 
       - name: Lint
         run: uv run ruff check . && uv run ruff format --check .
@@ -116,20 +116,25 @@ jobs:
         with:
           node-version: "22"
       - uses: astral-sh/setup-uv@v5
-      - run: uv sync --extra dev
-      - run: uv run pip install playwright && uv run playwright install --with-deps chromium
+      - run: uv sync --extra dev --locked
+      # `uv pip install`, not `uv run pip install`: a uv-managed venv has no pip inside it.
+      - run: uv pip install playwright && uv run playwright install --with-deps chromium
       - name: Build the dashboard
         working-directory: apps/dashboard
         run: (npm ci --no-audit --no-fund || npm install --no-audit --no-fund) && npm run build
       - name: Seed the demo database
         run: uv run python -m memory_firewall.cli setup-demo
-      - name: Start the stack
-        run: ./scripts/devstack.sh start
+      # Under `uv run` the venv is first on PATH, so devstack's `import fastapi` probe succeeds
+      # and it serves the real FastAPI/uvicorn app. Run bare, it would find the system Python
+      # without FastAPI and quietly fall back to the stdlib adapter — exercising the substitute
+      # instead of the server this project actually ships.
+      - name: Start the stack (real FastAPI, from the venv)
+        run: uv run ./scripts/devstack.sh start
       - name: Browser assertions
         run: uv run python scripts/run_e2e.py
       - name: Stop the stack
         if: always()
-        run: ./scripts/devstack.sh stop
+        run: uv run ./scripts/devstack.sh stop
       - uses: actions/upload-artifact@v4
         if: always()
         with:

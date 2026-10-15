@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-14T19:53:36.544193Z",
+  "generated_at": "2026-10-15T03:19:14.154673Z",
   "memory_firewall_version": "0.1.0",
   "detector_version": "mf-detector/1.0.0",
   "policy_revision": "mf-policy/1.0.0",
   "environment": {
-    "python": "3.13.16",
+    "python": "3.12.3",
     "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
     "machine": "x86_64"
   },
@@ -1029,70 +1029,70 @@
         "detail": [
           {
             "mode": "quarantined_chunk_indexed",
-            "chunk_id": "chk_07ab273f361e4b8ab39279fa086f75ca",
+            "chunk_id": "chk_0018dcc905624dc9ab42b338bf87eb5f",
             "notes": "chunk.state='quarantined' but present in fts_chunks",
             "probe_query": "quarantined referenced document refunds indexed policy",
             "exposed": true
           },
           {
             "mode": "revoked_source_active_chunk",
-            "chunk_id": "chk_c4de6bd406bd412da5e9d1e55cdfd898",
+            "chunk_id": "chk_46d7c54860cb49d28cd0c2a1329dbbfe",
             "notes": "active chunk behind a revoked source",
             "probe_query": "referenced document refunds revoked policy anyone",
             "exposed": true
           },
           {
             "mode": "digest_mismatch",
-            "chunk_id": "chk_49e8984167a44861b32dd3785fb42fe3",
+            "chunk_id": "chk_00f03e3d5d79462b980855ec32ef3995",
             "notes": "manifest digest deliberately does not match the stored text",
             "probe_query": "referenced document mismatch refunds policy anyone",
             "exposed": true
           },
           {
             "mode": "missing_manifest",
-            "chunk_id": "chk_66f06b9b84774d38bea5608f3d40d8fc",
+            "chunk_id": "chk_441219b56e8f421fb0f1ae95f17e0267",
             "notes": "no manifest entry at all; a missing expected value must not pass",
             "probe_query": "referenced document manifest refunds missing policy",
             "exposed": true
           },
           {
             "mode": "no_acl_active_chunk",
-            "chunk_id": "chk_5b0d92c5e9464b4ab4d66a0dff753a59",
+            "chunk_id": "chk_a55e09d598864c6ab1ff323207828e5d",
             "notes": "active chunk whose source has no read ACL for the caller",
             "probe_query": "referenced document refunds policy anyone active",
             "exposed": true
           },
           {
             "mode": "tombstoned_document",
-            "chunk_id": "chk_6b906e6df76b4c1cb823db1b43d46f55",
+            "chunk_id": "chk_5a3a8926288749f982571e9a3579eb29",
             "notes": "active chunk under a tombstoned document",
             "probe_query": "referenced tombstoned document refunds policy anyone",
             "exposed": true
           },
           {
             "mode": "expired_version",
-            "chunk_id": "chk_7c113bbabe0e44589df9974ad46c5f4c",
+            "chunk_id": "chk_876c69a8c9214133a9f52e2ca59cc183",
             "notes": "valid-time interval ended in 2020",
             "probe_query": "referenced document refunds expired version policy",
             "exposed": true
           },
           {
             "mode": "expired_source",
-            "chunk_id": "chk_ea3bb3ef16234d68940027b987d75217",
+            "chunk_id": "chk_17b321bca2304c9eac55f845ca4a7766",
             "notes": "source still 'active' but its expires_at lapsed in 2020",
             "probe_query": "referenced document refunds expired policy anyone",
             "exposed": true
           },
           {
             "mode": "superseded_version",
-            "chunk_id": "chk_56a30549f9654e5fb99572fa8e1045c1",
+            "chunk_id": "chk_c95222ac68da418793cdb894bc831986",
             "notes": "version_validity.state is 'superseded', not 'active'",
             "probe_query": "referenced superseded document refunds version policy",
             "exposed": true
           },
           {
             "mode": "future_recorded_time",
-            "chunk_id": "chk_6734773fe1be4cef83a2c2ef46fde185",
+            "chunk_id": "chk_7e4b4f963d244396afa333f72bcbbc10",
             "notes": "recorded-time window does not open until 2099",
             "probe_query": "referenced document recorded refunds policy anyone",
             "exposed": true
@@ -1224,19 +1224,19 @@
       "latency": {
         "ingestion": {
           "n": 178,
-          "p50_ms": 13.2877,
-          "p95_ms": 20.2292,
-          "p99_ms": 24.2722,
-          "mean_ms": 14.0544,
-          "max_ms": 29.6894
+          "p50_ms": 7.5068,
+          "p95_ms": 11.2064,
+          "p99_ms": 13.0969,
+          "mean_ms": 7.9919,
+          "max_ms": 15.9606
         },
         "retrieval": {
           "n": 366,
-          "p50_ms": 1.6931,
-          "p95_ms": 2.6248,
-          "p99_ms": 2.9265,
-          "mean_ms": 1.822,
-          "max_ms": 3.2333
+          "p50_ms": 1.3774,
+          "p95_ms": 2.024,
+          "p99_ms": 3.6024,
+          "mean_ms": 1.471,
+          "max_ms": 5.783
         }
       },
       "notes": []
@@ -2276,70 +2276,70 @@
         "detail": [
           {
             "mode": "quarantined_chunk_indexed",
-            "chunk_id": "chk_28e3a1244df94fb8b24a31a70412fe4a",
+            "chunk_id": "chk_388bfbae26ed48508b57e9156dd6bfaf",
             "notes": "chunk.state='quarantined' but present in fts_chunks",
             "probe_query": "quarantined referenced document refunds indexed policy",
             "exposed": true
           },
           {
             "mode": "revoked_source_active_chunk",
-            "chunk_id": "chk_178e699875dd4d38bc6237bcd75be918",
+            "chunk_id": "chk_9051c5d37db742c68f8cc27bd45b8d83",
             "notes": "active chunk behind a revoked source",
             "probe_query": "referenced document refunds revoked policy anyone",
             "exposed": true
           },
           {
             "mode": "digest_mismatch",
-            "chunk_id": "chk_886c3284d3004a869e77a12e46144e85",
+            "chunk_id": "chk_9b32329adb944b23bfd5aca517d3b20a",
             "notes": "manifest digest deliberately does not match the stored text",
             "probe_query": "referenced document mismatch refunds policy anyone",
             "exposed": true
           },
           {
             "mode": "missing_manifest",
-            "chunk_id": "chk_70a24b6467b0409a95d6d4970a84ab69",
+            "chunk_id": "chk_81e439ebeb2d477bb110a667e576e66a",
             "notes": "no manifest entry at all; a missing expected value must not pass",
             "probe_query": "referenced document manifest refunds missing policy",
             "exposed": true
           },
           {
             "mode": "no_acl_active_chunk",
-            "chunk_id": "chk_2b756c5a8f8c4c13a0dbbfa8163bd095",
+            "chunk_id": "chk_1dc0f6abab374ef9b764e798c73500e7",
             "notes": "active chunk whose source has no read ACL for the caller",
             "probe_query": "referenced document refunds policy anyone active",
             "exposed": true
           },
           {
             "mode": "tombstoned_document",
-            "chunk_id": "chk_1cde7ea764c64c8bbaaf48432caaf158",
+            "chunk_id": "chk_162b3fee36d442dc8e12f83e792358ef",
             "notes": "active chunk under a tombstoned document",
             "probe_query": "referenced tombstoned document refunds policy anyone",
             "exposed": true
           },
           {
             "mode": "expired_version",
-            "chunk_id": "chk_ae85cd851bf643cd833630d286c1c83c",
+            "chunk_id": "chk_d4523a72ef694f83922a289f57b00280",
             "notes": "valid-time interval ended in 2020",
             "probe_query": "referenced document refunds expired version policy",
             "exposed": true
           },
           {
             "mode": "expired_source",
-            "chunk_id": "chk_932e9a71166445378ba39469f5f8d6a9",
+            "chunk_id": "chk_a8077ac005344814bb3f70b980736531",
             "notes": "source still 'active' but its expires_at lapsed in 2020",
             "probe_query": "referenced document refunds expired policy anyone",
             "exposed": true
           },
           {
             "mode": "superseded_version",
-            "chunk_id": "chk_99cfaaf708294759a5614ee5e54e64d0",
+            "chunk_id": "chk_61ec86f95c154aa0beecdcdb24e0b200",
             "notes": "version_validity.state is 'superseded', not 'active'",
             "probe_query": "referenced superseded document refunds version policy",
             "exposed": true
           },
           {
             "mode": "future_recorded_time",
-            "chunk_id": "chk_73242081a6bc4955985ca8ff32e2ad3e",
+            "chunk_id": "chk_bcf9187aa0b04dde82841530ea731483",
             "notes": "recorded-time window does not open until 2099",
             "probe_query": "referenced document recorded refunds policy anyone",
             "exposed": true
@@ -2471,19 +2471,19 @@
       "latency": {
         "ingestion": {
           "n": 178,
-          "p50_ms": 14.4968,
-          "p95_ms": 19.3532,
-          "p99_ms": 23.7787,
-          "mean_ms": 14.8808,
-          "max_ms": 44.7476
+          "p50_ms": 8.0982,
+          "p95_ms": 10.3079,
+          "p99_ms": 12.2061,
+          "mean_ms": 8.2353,
+          "max_ms": 15.9017
         },
         "retrieval": {
           "n": 366,
-          "p50_ms": 1.4713,
-          "p95_ms": 2.3098,
-          "p99_ms": 2.9503,
-          "mean_ms": 1.5261,
-          "max_ms": 5.6394
+          "p50_ms": 1.6544,
+          "p95_ms": 2.032,
+          "p99_ms": 2.3388,
+          "mean_ms": 1.5993,
+          "max_ms": 2.4767
         }
       },
       "notes": []
@@ -3446,70 +3446,70 @@
         "detail": [
           {
             "mode": "quarantined_chunk_indexed",
-            "chunk_id": "chk_1debfea7cfda4d7b91842a2070e0eb67",
+            "chunk_id": "chk_4d31a8ab8f5e4134a970bf427a49f265",
             "notes": "chunk.state='quarantined' but present in fts_chunks",
             "probe_query": "quarantined referenced document refunds indexed policy",
             "exposed": true
           },
           {
             "mode": "revoked_source_active_chunk",
-            "chunk_id": "chk_00ebe1be39cc48848f5db83a68819cc4",
+            "chunk_id": "chk_981f5a3e579f4d578913f7296f4d9be4",
             "notes": "active chunk behind a revoked source",
             "probe_query": "referenced document refunds revoked policy anyone",
             "exposed": true
           },
           {
             "mode": "digest_mismatch",
-            "chunk_id": "chk_157ec01610dc48b59310acf86704487b",
+            "chunk_id": "chk_3a63d6a1ca024b3eb5e7e285e0e9616d",
             "notes": "manifest digest deliberately does not match the stored text",
             "probe_query": "referenced document mismatch refunds policy anyone",
             "exposed": true
           },
           {
             "mode": "missing_manifest",
-            "chunk_id": "chk_61ea5829893d44b89e4cb79ba3c1938a",
+            "chunk_id": "chk_5045664d3f664b138327bd01ab513ce1",
             "notes": "no manifest entry at all; a missing expected value must not pass",
             "probe_query": "referenced document manifest refunds missing policy",
             "exposed": true
           },
           {
             "mode": "no_acl_active_chunk",
-            "chunk_id": "chk_363173c5175a4cf5855f4da61824fb9c",
+            "chunk_id": "chk_a3549d98642049b29676eedfee51e2ee",
             "notes": "active chunk whose source has no read ACL for the caller",
             "probe_query": "referenced document refunds policy anyone active",
             "exposed": true
           },
           {
             "mode": "tombstoned_document",
-            "chunk_id": "chk_adea03312ea24b8d98d1c02f257a7ea9",
+            "chunk_id": "chk_676f77144d0540c58d1ebac21e2f12fb",
             "notes": "active chunk under a tombstoned document",
             "probe_query": "referenced tombstoned document refunds policy anyone",
             "exposed": true
           },
           {
             "mode": "expired_version",
-            "chunk_id": "chk_386c969ef9ad4b539d4187df9bd95e07",
+            "chunk_id": "chk_b189de6c28e2452fa162a800f1a422a0",
             "notes": "valid-time interval ended in 2020",
             "probe_query": "referenced document refunds expired version policy",
             "exposed": true
           },
           {
             "mode": "expired_source",
-            "chunk_id": "chk_f9b432c1a262466fbdac5d50ba4ec63b",
+            "chunk_id": "chk_33e0f43b44f8467f940d632d075bb819",
             "notes": "source still 'active' but its expires_at lapsed in 2020",
             "probe_query": "referenced document refunds expired policy anyone",
             "exposed": true
           },
           {
             "mode": "superseded_version",
-            "chunk_id": "chk_6ecf7ca82ec84ebba86db6603d767c54",
+            "chunk_id": "chk_4cd4d94d4bd7454993070b359e3c6c48",
             "notes": "version_validity.state is 'superseded', not 'active'",
             "probe_query": "referenced superseded document refunds version policy",
             "exposed": true
           },
           {
             "mode": "future_recorded_time",
-            "chunk_id": "chk_e09bfc4f1ddf4d4f9edb142a2ffe310c",
+            "chunk_id": "chk_790fe8cee59a49dd919cf0bcce0bd040",
             "notes": "recorded-time window does not open until 2099",
             "probe_query": "referenced document recorded refunds policy anyone",
             "exposed": true
@@ -3641,19 +3641,19 @@
       "latency": {
         "ingestion": {
           "n": 178,
-          "p50_ms": 14.3473,
-          "p95_ms": 20.73,
-          "p99_ms": 24.2862,
-          "mean_ms": 14.4082,
-          "max_ms": 26.1223
+          "p50_ms": 7.6916,
+          "p95_ms": 10.7797,
+          "p99_ms": 12.337,
+          "mean_ms": 8.0331,
+          "max_ms": 13.798
         },
         "retrieval": {
           "n": 366,
-          "p50_ms": 1.457,
-          "p95_ms": 2.6396,
-          "p99_ms": 3.4252,
-          "mean_ms": 1.6362,
-          "max_ms": 6.7128
+          "p50_ms": 1.0759,
+          "p95_ms": 1.3607,
+          "p99_ms": 1.6394,
+          "mean_ms": 1.0947,
+          "max_ms": 3.3169
         }
       },
       "notes": []
@@ -4618,70 +4618,70 @@
         "detail": [
           {
             "mode": "quarantined_chunk_indexed",
-            "chunk_id": "chk_b70c1afd4fda4740b184b3b5dda45f3b",
+            "chunk_id": "chk_b79aca3dd6464a78a4ec1b151a11c68b",
             "notes": "chunk.state='quarantined' but present in fts_chunks",
             "probe_query": "quarantined referenced document refunds indexed policy",
             "exposed": false
           },
           {
             "mode": "revoked_source_active_chunk",
-            "chunk_id": "chk_2d8b686d5b7d491c9fca5668b79927b0",
+            "chunk_id": "chk_0acffd9bc68a4c0ebdf85cfa4b18262f",
             "notes": "active chunk behind a revoked source",
             "probe_query": "referenced document refunds revoked policy anyone",
             "exposed": false
           },
           {
             "mode": "digest_mismatch",
-            "chunk_id": "chk_51160750e09448b28f8074624b408922",
+            "chunk_id": "chk_bd199edb7d434cad9f882983cc03b100",
             "notes": "manifest digest deliberately does not match the stored text",
             "probe_query": "referenced document mismatch refunds policy anyone",
             "exposed": false
           },
           {
             "mode": "missing_manifest",
-            "chunk_id": "chk_74bf94c4658a415b829fe8e7da6ad1ff",
+            "chunk_id": "chk_e3d22bba0acd4cc8879942432971bc10",
             "notes": "no manifest entry at all; a missing expected value must not pass",
             "probe_query": "referenced document manifest refunds missing policy",
             "exposed": false
           },
           {
             "mode": "no_acl_active_chunk",
-            "chunk_id": "chk_1867d4b715d6467fa9ea7625523f86cc",
+            "chunk_id": "chk_93026d3f1d3249ce8f98aaf48cd8614c",
             "notes": "active chunk whose source has no read ACL for the caller",
             "probe_query": "referenced document refunds policy anyone active",
             "exposed": false
           },
           {
             "mode": "tombstoned_document",
-            "chunk_id": "chk_4274973275894b87bcdf80dd80fc7c4e",
+            "chunk_id": "chk_9fb8e1dff3da430ab3de9a5c360155b1",
             "notes": "active chunk under a tombstoned document",
             "probe_query": "referenced tombstoned document refunds policy anyone",
             "exposed": false
           },
           {
             "mode": "expired_version",
-            "chunk_id": "chk_9899a8a5cb8a4467a9ac3b761534047a",
+            "chunk_id": "chk_2f6218963d3c416287320192bf988baa",
             "notes": "valid-time interval ended in 2020",
             "probe_query": "referenced document refunds expired version policy",
             "exposed": false
           },
           {
             "mode": "expired_source",
-            "chunk_id": "chk_45099e6170b34bb8ac99e4895092631d",
+            "chunk_id": "chk_186f5487efbc4c9e9cfa97fe35ddca36",
             "notes": "source still 'active' but its expires_at lapsed in 2020",
             "probe_query": "referenced document refunds expired policy anyone",
             "exposed": false
           },
           {
             "mode": "superseded_version",
-            "chunk_id": "chk_fe08dd7e30944fce99ad7866e374bc2c",
+            "chunk_id": "chk_cf9c4d8442a149319d3a4aa052f583ac",
             "notes": "version_validity.state is 'superseded', not 'active'",
             "probe_query": "referenced superseded document refunds version policy",
             "exposed": false
           },
           {
             "mode": "future_recorded_time",
-            "chunk_id": "chk_c19a9875d82e46809bdad866bb8e5c5a",
+            "chunk_id": "chk_e9c936adc612449192f6f5564d185bf0",
             "notes": "recorded-time window does not open until 2099",
             "probe_query": "referenced document recorded refunds policy anyone",
             "exposed": false
@@ -4813,19 +4813,19 @@
       "latency": {
         "ingestion": {
           "n": 178,
-          "p50_ms": 13.6945,
-          "p95_ms": 19.653,
-          "p99_ms": 23.651,
-          "mean_ms": 14.1887,
-          "max_ms": 29.1456
+          "p50_ms": 7.8226,
+          "p95_ms": 10.9913,
+          "p99_ms": 12.3915,
+          "mean_ms": 8.1943,
+          "max_ms": 15.5288
         },
         "retrieval": {
           "n": 366,
-          "p50_ms": 9.422,
-          "p95_ms": 18.8462,
-          "p99_ms": 27.659,
-          "mean_ms": 10.4686,
-          "max_ms": 36.8335
+          "p50_ms": 5.5061,
+          "p95_ms": 8.7054,
+          "p99_ms": 9.7694,
+          "mean_ms": 5.7865,
+          "max_ms": 12.0938
         }
       },
       "notes": []
@@ -4871,7 +4871,7 @@
     },
     "p95_retrieval_overhead_under_100ms": {
       "target": "< 100 ms p95 guarded retrieval on a small local corpus",
-      "observed": 18.8462,
+      "observed": 8.7054,
       "met": true
     }
   },

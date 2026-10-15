@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-14T20:08:26Z",
+  "generated_at": "2026-10-15T03:28:21Z",
   "summary": {
-    "PASS": 19,
+    "PASS": 20,
     "FAIL": 0,
-    "BLOCKED": 2,
+    "BLOCKED": 1,
     "SKIPPED": 0
   },
   "results": [
@@ -11,90 +11,90 @@
       "name": "environment diagnostics",
       "status": "PASS",
       "detail": "}",
-      "command": "/usr/bin/python3 -m memory_firewall.cli doctor",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 -m memory_firewall.cli doctor",
       "retry": "",
-      "duration_s": 0.27,
+      "duration_s": 0.13,
       "evidence": ""
     },
     {
       "name": "unit tests",
       "status": "PASS",
-      "detail": "markers: parametrize=5",
-      "command": "/usr/bin/python3 scripts/pytest_fallback.py tests/unit",
+      "detail": "107 passed in 0.24s",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 -m pytest tests/unit",
       "retry": "",
-      "duration_s": 0.5,
-      "evidence": "markers: parametrize=5"
+      "duration_s": 0.71,
+      "evidence": "107 passed in 0.24s"
     },
     {
       "name": "integration tests",
       "status": "PASS",
-      "detail": "markers: integration=24, parametrize=2",
-      "command": "/usr/bin/python3 scripts/pytest_fallback.py tests/integration",
+      "detail": "75 passed in 5.11s",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 -m pytest tests/integration",
       "retry": "",
-      "duration_s": 9.99,
-      "evidence": "markers: integration=24, parametrize=2"
+      "duration_s": 5.49,
+      "evidence": "75 passed in 5.11s"
     },
     {
       "name": "security regression suite",
       "status": "PASS",
-      "detail": "markers: parametrize=7",
-      "command": "/usr/bin/python3 scripts/pytest_fallback.py tests/security",
+      "detail": "119 passed in 5.87s",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 -m pytest tests/security",
       "retry": "",
-      "duration_s": 10.05,
-      "evidence": "markers: parametrize=7"
+      "duration_s": 6.43,
+      "evidence": "119 passed in 5.87s"
     },
     {
       "name": "no security test was skipped",
       "status": "PASS",
       "detail": "OK: every security test executed and passed.",
-      "command": "/usr/bin/python3 scripts/assert_no_skipped_security.py",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 scripts/assert_no_skipped_security.py",
       "retry": "",
-      "duration_s": 9.6,
-      "evidence": "security suite: executed=119 skipped=0 exit=0\nOK: every security test executed and passed."
+      "duration_s": 5.9,
+      "evidence": "security suite: executed=119 skipped=0 exit=0 (junit xml)\nOK: every security test executed and passed."
     },
     {
       "name": "release seed vectors (TEST_VECTORS.json)",
       "status": "PASS",
-      "detail": "markers: integration=2, parametrize=1",
-      "command": "/usr/bin/python3 scripts/pytest_fallback.py tests/integration/test_release_vectors.py",
+      "detail": "14 passed in 0.65s",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 -m pytest tests/integration/test_release_vectors.py",
       "retry": "",
-      "duration_s": 1.32,
-      "evidence": "markers: integration=2, parametrize=1"
+      "duration_s": 1.07,
+      "evidence": "14 passed in 0.65s"
     },
     {
       "name": "offline scenarios",
       "status": "PASS",
       "detail": "12/12 scenarios passed (64 assertions)",
-      "command": "/usr/bin/python3 -m memory_firewall.cli scenarios",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 -m memory_firewall.cli scenarios",
       "retry": "",
-      "duration_s": 2.09,
+      "duration_s": 1.26,
       "evidence": "12/12 scenarios passed (64 assertions)"
     },
     {
       "name": "mandatory smoke",
       "status": "PASS",
       "detail": "}",
-      "command": "/usr/bin/python3 -m memory_firewall.cli smoke",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 -m memory_firewall.cli smoke",
       "retry": "",
-      "duration_s": 1.43,
+      "duration_s": 0.86,
       "evidence": "  \"verdict\": \"PASS\"\n}"
     },
     {
       "name": "SDK quickstart example",
       "status": "PASS",
       "detail": "Everything above ran offline against real SQLite + FTS5. No API key, no network.",
-      "command": "/usr/bin/python3 examples/sdk_quickstart.py",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 examples/sdk_quickstart.py",
       "retry": "",
-      "duration_s": 0.27,
+      "duration_s": 0.23,
       "evidence": "Everything above ran offline against real SQLite + FTS5. No API key, no network."
     },
     {
       "name": "support copilot example",
       "status": "PASS",
       "detail": "authorised source at all, so the copilot declines instead of inventing one.",
-      "command": "/usr/bin/python3 examples/support_copilot/copilot.py",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 examples/support_copilot/copilot.py",
       "retry": "",
-      "duration_s": 0.31,
+      "duration_s": 0.25,
       "evidence": "authorised source at all, so the copilot declines instead of inventing one."
     },
     {
@@ -121,7 +121,7 @@
       "detail": "All checks passed!",
       "command": "ruff check .",
       "retry": "",
-      "duration_s": 0.02,
+      "duration_s": 0.01,
       "evidence": ""
     },
     {
@@ -130,16 +130,16 @@
       "detail": "71 files already formatted",
       "command": "ruff format --check .",
       "retry": "",
-      "duration_s": 0.02,
+      "duration_s": 0.01,
       "evidence": ""
     },
     {
       "name": "mypy typecheck",
-      "status": "BLOCKED",
-      "detail": "mypy is not installed",
-      "command": "python -m mypy",
-      "retry": "uv sync --extra dev && python -m mypy",
-      "duration_s": 0.0,
+      "status": "PASS",
+      "detail": "Success: no issues found in 32 source files",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 -m mypy",
+      "retry": "",
+      "duration_s": 0.18,
       "evidence": ""
     },
     {
@@ -148,17 +148,17 @@
       "detail": "built -> /home/claude/memory-firewall/apps/dashboard/dist",
       "command": "npm run build --prefix apps/dashboard",
       "retry": "",
-      "duration_s": 2.79,
+      "duration_s": 1.94,
       "evidence": "built -> /home/claude/memory-firewall/apps/dashboard/dist"
     },
     {
       "name": "browser end-to-end + live dashboard assertions",
       "status": "PASS",
       "detail": "==============================================================================",
-      "command": "/usr/bin/python3 scripts/run_e2e.py",
+      "command": "/home/claude/memory-firewall/.venv/bin/python3 scripts/run_e2e.py",
       "retry": "",
-      "duration_s": 14.28,
-      "evidence": "==============================================================================\n33/33 browser checks passed in 14.1s\n=============================================================================="
+      "duration_s": 13.52,
+      "evidence": "==============================================================================\n33/33 browser checks passed in 13.4s\n=============================================================================="
     },
     {
       "name": "required screenshots and architecture image exist",

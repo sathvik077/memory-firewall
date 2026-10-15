@@ -6,13 +6,14 @@ Every release gate from `CLAUDE.md` §8, with the command that was run and what 
 of a mock-up. Anything not executed is **NOT VERIFIED** with its exact retry command. Release status
 is NOT READY unless every mandatory gate passes and `make verify` exits 0.
 
-- **Date:** 2026-10-14
-- **Environment:** Python 3.13.16 · SQLite 3.45.1 (FTS5 present) · Node 22.22.0 · Ruff 0.16.8 ·
-  Linux 6.18.44 x86_64
+- **Date:** 2026-10-15 (supersedes the 2026-10-14 run, which was made without package-registry
+  access and therefore against a substituted toolchain)
+- **Environment:** Python 3.12.3 · SQLite 3.45.1 (FTS5 present) · Node 22.22.0 · real pytest 8.4.2 ·
+  real FastAPI 0.143.1 on uvicorn 0.39.0 · Ruff 0.17.0 · mypy 1.20.2 · Linux 6.18.44 x86_64
 - **Truth source:** `make verify` → `docs/verify-report.json`
-- **Overall:** **NOT READY** — 25 of 27 gates PASS, **2 NOT VERIFIED** (mypy, Docker image builds),
-  0 FAIL. Both unverified gates are blocked by this environment's egress policy, not by a defect,
-  and both print their exact retry command.
+- **Overall:** **NOT READY** — 26 of 27 gates PASS, **1 NOT VERIFIED** (Docker image builds), 0 FAIL.
+  The one unverified gate has no Docker daemon in this sandbox; it prints its exact retry command,
+  and the project's GitHub Actions run reports its container-build job as successful.
 
 ---
 
@@ -50,11 +51,11 @@ is NOT READY unless every mandatory gate passes and `make verify` exits 0.
 
 | Gate | Status | Command | Observed |
 |---|---|---|---|
-| **MF-21** `make test`, `lint`, `typecheck`, `build`, `verify`, CI with real outputs; npm build works offline | **PARTIAL — 1 of 5 NOT VERIFIED** | see below | `make test` **302 passed, 0 skipped**. `ruff check` **All checks passed**; `ruff format --check` **71 files already formatted**. `npm run build` succeeds **offline** (no runtime dependencies). `make verify` runs and reports honestly. **`mypy` NOT VERIFIED** — not installable here. **CI NOT VERIFIED** — never executed; `.github/workflows/ci.yml` is written but has not run. |
-| **MF-22** Regression tests for spoofing, Unicode, benign quotations, false positives, reingestion, digests, cross-tenant, metadata tampering, ACL invalidation, path traversal | **PASS** | `pytest tests/security` (113 tests) | All named classes covered. `scripts/assert_no_skipped_security.py` asserts **113 executed, 0 skipped**. |
+| **MF-21** `make test`, `lint`, `typecheck`, `build`, `verify`, CI with real outputs; npm build works offline | **PASS** | `make test lint typecheck build verify` | `make test` under **real pytest 8.4.2**: **302 passed, 0 failed, 0 skipped** in 24.3s. `ruff check` **All checks passed** (0.17.0); `ruff format --check` **71 files already formatted**. **`mypy` Success: no issues found in 32 source files** — the gate now runs, after 24 real type errors were found and fixed. `npm run build` succeeds **offline** (no runtime dependencies). `make verify` runs and reports honestly. **CI has executed**: the dashboard-build, container-build and repository-hygiene jobs pass; the backend job's two failures (mypy, and a security-gate script that miscounted under real pytest) are fixed in this revision. |
+| **MF-22** Regression tests for spoofing, Unicode, benign quotations, false positives, reingestion, digests, cross-tenant, metadata tampering, ACL invalidation, path traversal | **PASS** | `pytest tests/security` (119 tests) | All named classes covered. `scripts/assert_no_skipped_security.py` asserts **119 executed, 0 skipped**, counted from a JUnit report rather than scraped console text. |
 | **MF-23** Size limits, content-type validation, safe file IO, localhost binding, auth on mutations, no SSRF, no HTML/script injection, escaped previews | **PASS** | `pytest tests/security/test_input_limits_and_injection.py`; `run_e2e.py` | Oversized/empty documents refused; upload suffix allow-list; hostile FTS/SQL queries inert; path traversal, symlinks and symlinked parents blocked; a test greps the engine and API for outbound-request calls (none). Previews escaped twice over; CSP `script-src 'self'` verified live — it blocked Playwright's own `wait_for_function`. |
 | **MF-24** Audit distinguishes detection from proof; keys outside the untrusted DB; 'tamper-evident' bounded | **PASS** | `docs/SECURITY.md`; `integrity.py`; UI copy | Every finding stores `confidence_semantics` stating it is *not* a probability of maliciousness. Manifests live in a separate file; `MF_HMAC_KEY` is read from the environment and never persisted. SECURITY.md states exactly what a digest does and does not prove. |
-| **MF-25** GitHub Actions and Docker build succeed; safe `.env.example`; only synthetic data committed; private PDF ignored | **PARTIAL — NOT VERIFIED** | `git check-ignore private/…`; `docker build` | Git hygiene **PASS**: `private/` ignored, nothing tracked under it, no `.env`, no `*.sqlite3`, 124 files tracked, `.env.example` contains placeholders only. **Docker builds NOT VERIFIED** — no daemon and Docker Hub blocked by egress policy. **CI NOT VERIFIED** — not executed. |
+| **MF-25** GitHub Actions and Docker build succeed; safe `.env.example`; only synthetic data committed; private PDF ignored | **PARTIAL — 1 NOT VERIFIED HERE** | `git check-ignore private/…`; `docker build`; GitHub Actions | Git hygiene **PASS**: `private/` ignored, nothing tracked under it, no `.env`, no `*.sqlite3`, 137 files tracked, `.env.example` contains placeholders only. **GitHub Actions has run**: container images build, dashboard build and repository hygiene all pass. **Docker builds NOT VERIFIED on this machine** — no daemon in the sandbox; CI is the evidence that they build. |
 | **MF-26** `docs/RESEARCH.md` cites ≥5 primary sources; novelty as a tested hypothesis | **PASS** | `docs/RESEARCH.md` | **12 primary sources**, each fetched and verified by an independent research agent, with two partial-verification caveats flagged in the text. Includes an explicit "where Memory Firewall is NOT novel" section and states plainly where Model Armor and CaMeL are stronger. |
 | **MF-27** `docs/VERIFICATION.md` reports real commands, date, OS, deps, measured outcomes, limitations, unresolved items | **PASS** | `docs/VERIFICATION.md` | Present, with exact commands, exit codes, environment, and a blocked-checks section carrying retry commands. |
 
@@ -62,40 +63,43 @@ is NOT READY unless every mandatory gate passes and `make verify` exits 0.
 
 ## Not verified, and exactly why
 
-Neither is a defect in the software. Both are environment constraints, recorded rather than
-papered over.
+One gate, and it is an absent tool rather than a defect.
 
 | Gate | What could not run | Why | Retry |
 |---|---|---|---|
-| MF-21 | `mypy` | PyPI returns **403** under this session's egress policy, so `mypy` could not be installed | `uv sync --extra dev && python -m mypy` |
-| MF-21, MF-25 | GitHub Actions CI | Workflow authored but never executed — no push has been made (and none will be without approval) | push the branch, or `act -W .github/workflows/ci.yml` |
-| MF-25 | `docker build` for both images | No Docker daemon in this environment, and `registry-1.docker.io` returns **403** | `docker build -f Dockerfile.api -t memory-firewall-api:dev .` |
+| MF-25 | `docker build` for both images | No Docker daemon in this sandbox | `docker build -f Dockerfile.api -t memory-firewall-api:dev .` |
 
-Two further environment notes that affect *how* evidence was produced, not whether it exists:
+Resolved since the 2026-10-14 run, when package registries became reachable:
 
-- **Test runner.** `pytest` is not installable here, so the suites ran under
-  `scripts/pytest_fallback.py`, which executes the same unmodified files with a documented subset of
-  pytest. The tests require no change to run under real pytest. See `docs/DECISIONS.md` D10.
-- **HTTP adapter.** FastAPI is not installable here, so the live stack served `/api/*` through the
-  fallback adapter in `scripts/serve_dashboard.py` — the same engine, different routing.
-  `tests/integration/test_route_parity.py` asserts the two adapters cannot diverge, after a real
-  divergence was found by the red-team review. See D8.
-
----
+- **mypy** (MF-21) now runs and passes. It found 24 real errors first, including an
+  `AttributeError` waiting on the answer path and eighteen `# type: ignore` comments that had been
+  written blind and were masking three genuine type errors.
+- **Real pytest** (MF-21) replaced `scripts/pytest_fallback.py`. Same 302 tests, same result — the
+  substitute had not been hiding a failure. The fallback runner stays in the tree for environments
+  without a registry, and `make test` still prefers real pytest when it is installed.
+- **Real FastAPI on uvicorn** (MF-12, MF-14, MF-23) replaced the fallback HTTP adapter for the live
+  stack. All 33 browser checks pass against the actual server, so the browser evidence is no longer
+  produced by a substitute. The adapter stays as a no-dependency fallback, with
+  `tests/integration/test_route_parity.py` continuing to assert the two cannot diverge.
+- **GitHub Actions** (MF-21, MF-25) has executed. Three of five jobs passed on the first run; the
+  backend job failed on the two defects described above and the e2e job was skipped behind it. Both
+  defects are fixed in this revision.
+- **`uv.lock` is committed**, and CI installs with `uv sync --extra dev --locked`, so the Python
+  dependency set is now pinned rather than re-resolved per run.
 
 ## Disposition
 
 **NOT READY**, on the contract's own terms: `make verify` exits 2 while any mandatory check is
-BLOCKED, and two are. Every gate that *could* be executed here was executed and passed, including
+BLOCKED, and one is. Every gate that *could* be executed here was executed and passed, including
 all thirteen security-functionality gates.
 
-To reach READY, in an environment with package-registry access:
+To reach READY, on a machine with a Docker daemon:
 
 ```bash
-uv sync --extra dev && python -m mypy     # MF-21
-docker build -f Dockerfile.api -t memory-firewall-api:dev .          # MF-25
+docker build -f Dockerfile.api -t memory-firewall-api:dev .
 docker build -f Dockerfile.dashboard -t memory-firewall-dashboard:dev .
-make verify                                # expect exit 0
+make dev        # the browser gate needs the stack up
+make verify     # expect exit 0
 ```
 
 Separately — and this is a property of the approach, not a gate: the detector lets original,
