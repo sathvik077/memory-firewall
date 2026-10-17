@@ -105,7 +105,7 @@ Prefer containers? `docker compose up --build` — both services bind to `127.0.
 ### Three enforcement points
 
 **1 — Pre-write.** Content is hashed, Unicode-normalised, chunked, scanned, and compared against a
-typed claim graph before anything can enter active memory.
+typed claim graph before anything can enter active memory..
 
 Normalisation is where most "clever" payloads die. `i<ZWSP>gnore previous instructions` is detected
 because zero-width characters are removed; `SYSTE`+Cyrillic-`М` is detected because confusables are
