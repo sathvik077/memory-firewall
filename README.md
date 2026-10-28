@@ -58,7 +58,7 @@ then asks an ordinary reader a question:
 | **Memory Firewall** | full write policy | **guarded query** | **0.0%** | **0 / 10** |
 
 Every condition runs over an identical 178-case corpus in an identical order. The last column is the
-whole thesis in one number.
+whole thesis in one number...
 
 > Measured by `make eval`; full scorecard in [`evals/results/RESULTS.md`](evals/results/RESULTS.md).
 
